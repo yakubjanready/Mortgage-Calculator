@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Mortgage Calculator</title>
+  <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+  <div class="card">
+    <h1>Mortgage Calculator</h1>
+    <form method="post" class="form">
+      <label>Loan amount (e.g. 100000)</label>
+      <input type="number" step="0.01" name="loan" required value="{{ inputs.get('loan','') }}">
+      <label>Annual interest rate (%) (e.g. 4.5)</label>
+      <input type="number" step="0.01" name="rate" required value="{{ inputs.get('rate','') }}">
+      <label>Term (years)</label>
+      <input type="number" name="years" required value="{{ inputs.get('years','') }}">
+      <label>Extra monthly payment (optional)</label>
+      <input type="number" step="0.01" name="extra" value="{{ inputs.get('extra','0') }}">
+      <button type="submit">Calculate</button>
+    </form>
+
+    {% if result %}
+    {% if result.error %}
+        <p style="color: red;">Error: {{ result.error }}</p>
+    {% else %}
+        <h3>Results</h3>
+        <p><strong>Monthly Payment:</strong> ${{ result.monthly_payment }}</p>
+        <p><strong>Monthly With Extra:</strong> ${{ result.monthly_with_extra }}</p>
+        <p><strong>Total Paid:</strong> ${{ result.total_paid }}</p>
+        <p><strong>Total Interest:</strong> ${{ result.total_interest }}</p>
+
+        <h3>Amortization Table (First {{ result.amortization|length }} Months)</h3>
+        <table>
+            <tr>
+                <th>Month</th>
+                <th>Payment</th>
+                <th>Principal</th>
+                <th>Interest</th>
+                <th>Balance</th>
+            </tr>
+            {% for row in result.amortization %}
+            <tr>
+                <td>{{ row.month }}</td>
+                <td>${{ row.payment }}</td>
+                <td>${{ row.principal }}</td>
+                <td>${{ row.interest }}</td>
+                <td>${{ row.balance }}</td>
+            </tr>
+            {% endfor %}
+        </table>
+    {% endif %}
+{% endif %}
+
+  </div>
+</body>
+</html>
